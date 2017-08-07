@@ -1,0 +1,132 @@
+---
+title: "Inferential Data Analysis"
+author: "Charles"
+date: "August 7, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+In this report we'll analyze the ToothGrowth data in the R datasets package and have a basic Inferential Data Analysis.
+
+## Basic exploratory data analysis
+Firstly we set up the environment:
+
+```{r envir}
+setwd("C:/Study/Coursera/1 Data-Science/2 RStudio/6 Class 6/Coursera_DataScience_Class6_FinalProject")
+set.seed(135246987)
+library(ggplot2)
+library(gridExtra)
+library(grid)
+library(datasets)
+```
+
+Then we load the data and summarize the data:
+
+```{r load data}
+data("ToothGrowth")
+dataTG <- ToothGrowth
+str(dataTG)
+head(dataTG)
+summary(dataTG)
+dataTG$dose <- as.factor(dataTG$dose)
+```
+
+We can get a general idea of the data according to explore above.
+Then we can do some exploratory data analysis by drawing relationships between
+length and supp & dose.
+
+```{r exploPlot}
+g1 <- ggplot(data = dataTG, aes(x=dose, y=len)) +
+        geom_boxplot(aes(fill = dose))
+g2 <- ggplot(data = dataTG, aes(x=supp ,y=len)) +
+        geom_boxplot(aes(fill = supp))
+grid.arrange(g1,g2,nrow=1)
+```
+
+As we can see above, it seems the length grows as dose increases.
+While the replationship between length and supp is not quite obvious.
+
+## T test for length and supp
+We conduct t-test for length and supp:
+
+```{r t len supp}
+t.test(len ~ supp, data = dataTG, alternative ="two.sided")
+```
+
+As we can see above, $95 \%$ confidence interval contains zero and p-value is about
+0.06.
+So we wouldn't reject the null hypothesis, which means 
+true difference in means is equal to 0.
+
+## T test for length and dose.
+We divide the data into three groups: dose in 0.5 and 1; dose in 0.5 and 2; dose in 1 and 2.
+
+```{r divide}
+dataTG_0.5_1.0 <- subset(dataTG, dose %in% c("0.5","1"))
+dataTG_0.5_2.0 <- subset(dataTG, dose %in% c("0.5","2"))
+dataTG_1.0_2.0 <- subset(dataTG, dose %in% c("1","2"))
+```
+
+Then do the t-test:
+
+```{r t len dose}
+t.test(len ~ dose, data = dataTG_0.5_1.0)
+t.test(len ~ dose, data = dataTG_0.5_2.0)
+t.test(len ~ dose, data = dataTG_1.0_2.0)
+```
+
+As we can see above, all three test the p-value is smaller than $5\%$ and the
+$95 \%$ confidence interval dose not contain zero.
+Besides, they are all negative, which means there's an increase as dose goes up.
+
+## Conclusions and assumptions
+
+According to the analysis above, we could see that under $95 \%$ confidence interval:
+
+- Supplement has no effect on the length of tooth growth.
+- Tooth grows longer as the dose increases.
+
+Assumptions:
+
+- The experiment was properly conducted.
+- The sample data is good enough to represent the entire population.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
